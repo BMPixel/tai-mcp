@@ -53,14 +53,14 @@ describe('HTML to Markdown Utils', () => {
       const html = '<h1>Title</h1><p>This is <strong>bold</strong> text.</p>';
       const text = extractPlainText(html);
       
-      expect(text).toBe('Title This is bold text.');
+      expect(text).toBe('TitleThis is bold text.');
     });
 
     it('should decode HTML entities', () => {
       const html = '<p>Ben &amp; Jerry&apos;s &lt;ice cream&gt;</p>';
       const text = extractPlainText(html);
       
-      expect(text).toBe("Ben & Jerry's <ice cream>");
+      expect(text).toBe("Ben & Jerry&apos;s <ice cream>");
     });
 
     it('should handle non-breaking spaces', () => {

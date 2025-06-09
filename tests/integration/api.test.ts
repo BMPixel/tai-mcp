@@ -76,7 +76,7 @@ describe('API Integration Tests', () => {
       });
 
       expect(messages).toBeDefined();
-      expect(messages.messages).toBeInstanceOf(Array);
+      expect(Array.isArray(messages.messages)).toBe(true);
       expect(messages.count).toBeGreaterThanOrEqual(0);
     }, 10000);
 

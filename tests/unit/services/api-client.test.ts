@@ -76,7 +76,7 @@ describe('ApiClient', () => {
 
       await expect(apiClient.sendEmail({
         to: 'test@example.com'
-      })).rejects.toThrow('Failed to send email: Test error message');
+      })).rejects.toThrow('API request failed: Test error message');
     });
   });
 
