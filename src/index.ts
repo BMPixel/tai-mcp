@@ -89,6 +89,7 @@ async function main(): Promise<void> {
       
       case undefined: {
         // Default: Start MCP server
+        process.env.MCP_MODE = 'true'; // Set flag to redirect logs to stderr
         logger.info('Starting TAI MCP Email Server in MCP mode');
         const server = new McpEmailServer(config);
         await server.start();
