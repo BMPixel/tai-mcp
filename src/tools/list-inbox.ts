@@ -1,0 +1,85 @@
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { listInboxSchema, type ListInboxParams, type ToolResponse } from '../types/tools.js';
+import { ApiClient } from '../services/api-client.js';
+import { Config } from '../types/tools.js';
+import { getInstanceEmail } from '../utils/config.js';
+import { logger } from '../utils/logger.js';
+
+export function registerListInboxTool(server: McpServer, apiClient: ApiClient, config: Config): void {
+  server.tool(
+    'list_inbox',
+    'List recent emails sent to the instance address',
+    listInboxSchema.shape,
+    async (params): Promise<ToolResponse> => {
+      try {
+        logger.info('Executing list_inbox tool', { params });
+        
+        const validatedParams = listInboxSchema.parse(params);
+        const instanceEmail = getInstanceEmail(config);
+
+        // Fetch messages with the specified parameters
+        const messages = await apiClient.fetchMessages({
+          prefix: config.instance,
+          show_read: validatedParams.show_read,
+          limit: validatedParams.limit,
+          offset: validatedParams.offset
+        });
+
+        if (!messages.messages || messages.messages.length === 0) {
+          return {
+            content: [{
+              type: "text",
+              text: `No emails found for ${instanceEmail}`
+            }]
+          };
+        }
+
+        // Format the email list as a markdown table
+        const tableHeader = `# Email Inbox (${instanceEmail})
+
+| ID | From | Subject | Date | Status |
+|---|---|---|---|---|`;
+
+        const tableRows = messages.messages.map(msg => {
+          const subject = (msg.subject || '(No subject)').substring(0, 50);
+          const from = msg.from.substring(0, 30);
+          const date = new Date(msg.received_at).toLocaleString();
+          const status = msg.is_read ? '✓ Read' : '✉ Unread';
+          
+          return `| ${msg.id} | ${from} | ${subject} | ${date} | ${status} |`;
+        }).join('\n');
+
+        const summary = `\nShowing ${messages.messages.length} of ${messages.count} emails`;
+        const pagination = messages.has_more ? '\n\n*Use offset parameter to load more emails*' : '';
+
+        const inboxContent = `${tableHeader}\n${tableRows}${summary}${pagination}`;
+
+        logger.info('Email list retrieved successfully', { 
+          count: messages.messages.length,
+          total: messages.count,
+          hasMore: messages.has_more
+        });
+
+        return {
+          content: [{
+            type: "text",
+            text: inboxContent
+          }]
+        };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        logger.error('Failed to list inbox', { 
+          error: errorMessage,
+          params 
+        });
+        
+        return {
+          content: [{
+            type: "text",
+            text: `Error listing inbox: ${errorMessage}`
+          }]
+        };
+      }
+    }
+  );
+}
