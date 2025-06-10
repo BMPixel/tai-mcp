@@ -35,14 +35,15 @@ The codebase follows a modular architecture:
 
 - **Entry Point**: `src/index.ts` - CLI router and environment validation
 - **MCP Server**: `src/server.ts` - Main MCP server implementation with tool registration
-- **Tools**: `src/tools/` - MCP tool implementations (send_email, fetch_email, list_inbox)
+- **Tools**: `src/tools/` - MCP tool implementations (send_email, fetch_email, list_inbox, reply_email)
 - **Services**: `src/services/` - Core business logic (auth, api-client, email-poller)
 - **Commands**: `src/commands/` - CLI command implementations (register, live)
 
 ### Key Services
 - **ApiClient** (`src/services/api-client.ts`): Centralized CF Mail Bridge API communication with JWT authentication
-- **AuthService** (`src/services/auth.ts`): User registration and login with token management
+- **AuthService** (`src/services/auth.ts`): User registration and login with token management  
 - **EmailPoller** (`src/services/email-poller.ts`): Monitors for new emails in live mode
+- **Markdown Conversion** (`src/utils/html-to-markdown.ts`): Bidirectional markdown ↔ HTML conversion
 
 ### Operating Modes
 1. **MCP Mode** (default): Provides email tools for MCP clients

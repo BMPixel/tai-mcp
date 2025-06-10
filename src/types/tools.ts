@@ -8,10 +8,17 @@ export const sendEmailSchema = z.object({
     .describe('Recipient email address. Defaults to USEREMAIL if not specified.'),
   subject: z.string()
     .optional()
-    .describe('Email subject line. Defaults to "Email from CF Mail Bridge" if not provided.'),
+    .describe('Email subject line. Defaults to "Email from {instance name}" if not provided.'),
+  content: z.string()
+    .optional()
+    .describe('Email message content (markdown or HTML based on format parameter)'),
+  format: z.enum(['markdown', 'html'])
+    .default('markdown')
+    .optional()
+    .describe('Content format: "markdown" (default) converts content to HTML, "html" uses content as-is'),
   html: z.string()
     .optional()
-    .describe('HTML message body content')
+    .describe('Legacy HTML message body content (for backward compatibility)')
 });
 
 // fetch_email tool schema

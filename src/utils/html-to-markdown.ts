@@ -1,4 +1,5 @@
 import TurndownService from 'turndown';
+import { marked } from 'marked';
 
 const turndownService = new TurndownService({
   headingStyle: 'atx',
@@ -85,5 +86,32 @@ export function extractPlainText(html: string): string {
       .trim();
   } catch (error) {
     return html;
+  }
+}
+
+// Configure marked for secure email content
+marked.setOptions({
+  gfm: true,
+  breaks: true
+});
+
+export function convertMarkdownToHtml(markdown: string): string {
+  if (!markdown || typeof markdown !== 'string') {
+    return '';
+  }
+
+  try {
+    // Convert markdown to HTML
+    const html = marked.parse(markdown) as string;
+    
+    // Clean up the generated HTML
+    return html
+      // Remove excessive newlines
+      .replace(/\n{3,}/g, '\n\n')
+      // Trim whitespace
+      .trim();
+  } catch (error) {
+    // If conversion fails, wrap the original markdown in a paragraph
+    return `<p>${markdown.replace(/\n/g, '<br>')}</p>`;
   }
 }

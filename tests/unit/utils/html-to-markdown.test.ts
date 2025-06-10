@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals';
-import { convertHtmlToMarkdown, extractPlainText } from '../../../src/utils/html-to-markdown.js';
+import { convertHtmlToMarkdown, extractPlainText, convertMarkdownToHtml } from '../../../src/utils/html-to-markdown.js';
 
 describe('HTML to Markdown Utils', () => {
   describe('convertHtmlToMarkdown', () => {
@@ -81,6 +81,80 @@ describe('HTML to Markdown Utils', () => {
       const text = extractPlainText(html);
       
       expect(text).toBe('Multiple spaces and lines');
+    });
+  });
+
+  describe('convertMarkdownToHtml', () => {
+    it('should convert basic markdown to HTML', () => {
+      const markdown = '# Title\n\nThis is a **test** paragraph.';
+      const html = convertMarkdownToHtml(markdown);
+      
+      expect(html).toContain('<h1>Title</h1>');
+      expect(html).toContain('<strong>test</strong>');
+    });
+
+    it('should handle links correctly', () => {
+      const markdown = 'Visit [this link](https://example.com)';
+      const html = convertMarkdownToHtml(markdown);
+      
+      expect(html).toContain('<a href="https://example.com">this link</a>');
+    });
+
+    it('should handle blockquotes', () => {
+      const markdown = '> This is a quote';
+      const html = convertMarkdownToHtml(markdown);
+      
+      expect(html).toContain('<blockquote>');
+      expect(html).toContain('This is a quote');
+    });
+
+    it('should handle code blocks', () => {
+      const markdown = '```\nconst x = 1;\n```';
+      const html = convertMarkdownToHtml(markdown);
+      
+      expect(html).toContain('<pre>');
+      expect(html).toContain('<code>');
+      expect(html).toContain('const x = 1;');
+    });
+
+    it('should handle lists', () => {
+      const markdown = '- Item 1\n- Item 2\n- Item 3';
+      const html = convertMarkdownToHtml(markdown);
+      
+      expect(html).toContain('<ul>');
+      expect(html).toContain('<li>Item 1</li>');
+      expect(html).toContain('<li>Item 2</li>');
+    });
+
+    it('should handle line breaks', () => {
+      const markdown = 'Line 1\nLine 2';
+      const html = convertMarkdownToHtml(markdown);
+      
+      expect(html).toContain('<br>');
+    });
+
+    it('should handle empty or invalid input', () => {
+      expect(convertMarkdownToHtml('')).toBe('');
+      expect(convertMarkdownToHtml(null as any)).toBe('');
+      expect(convertMarkdownToHtml(undefined as any)).toBe('');
+    });
+
+    it('should fallback gracefully on conversion errors', () => {
+      // Test with malformed markdown that might cause errors
+      const problematicMarkdown = 'Some text with [unclosed link';
+      const html = convertMarkdownToHtml(problematicMarkdown);
+      
+      // Should not throw error and provide some output
+      expect(html).toBeDefined();
+      expect(html.length).toBeGreaterThan(0);
+    });
+
+    it('should support GitHub Flavored Markdown features', () => {
+      const markdown = '~~strikethrough~~ and tables:\n\n| Header |\n|--------|\n| Cell   |';
+      const html = convertMarkdownToHtml(markdown);
+      
+      expect(html).toContain('<del>strikethrough</del>');
+      expect(html).toContain('<table>');
     });
   });
 });

@@ -3,11 +3,12 @@ import { sendEmailSchema, type SendEmailParams, type ToolResponse } from '../typ
 import { ApiClient } from '../services/api-client.js';
 import { Config } from '../types/tools.js';
 import { logger } from '../utils/logger.js';
+import { convertMarkdownToHtml } from '../utils/html-to-markdown.js';
 
 export function registerSendEmailTool(server: McpServer, apiClient: ApiClient, config: Config): void {
   server.tool(
     'send_email',
-    'Send an email through the CF Mail Bridge API',
+    'Send an email through the CF Mail Bridge API with markdown or HTML content',
     sendEmailSchema.shape,
     async (params): Promise<ToolResponse> => {
       try {
@@ -15,12 +16,34 @@ export function registerSendEmailTool(server: McpServer, apiClient: ApiClient, c
         
         const validatedParams = sendEmailSchema.parse(params);
         
+        // Determine content and format
+        let htmlContent: string;
+        
+        if (validatedParams.html) {
+          // Backward compatibility: use legacy html field directly
+          htmlContent = validatedParams.html;
+        } else if (validatedParams.content) {
+          // Use new content field with format conversion
+          const format = validatedParams.format || 'markdown';
+          
+          if (format === 'markdown') {
+            htmlContent = convertMarkdownToHtml(validatedParams.content);
+          } else if (format === 'html') {
+            htmlContent = validatedParams.content;
+          } else {
+            throw new Error(`Invalid format: ${format}. Must be "markdown" or "html".`);
+          }
+        } else {
+          // Default content
+          htmlContent = '<p>This email was sent via the TAI MCP Email Server.</p>';
+        }
+        
         // Prepare the email request
         const emailRequest = {
           to: validatedParams.to || config.userEmail || '',
           from: `${config.instance}.${config.name}@tai.chat`,
-          subject: validatedParams.subject || 'Email from CF Mail Bridge',
-          html: validatedParams.html || '<p>This email was sent via the TAI MCP Email Server.</p>'
+          subject: validatedParams.subject || `Email from ${config.instance}`,
+          html: htmlContent
         };
 
         // Validate that we have a recipient
