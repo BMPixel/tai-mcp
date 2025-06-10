@@ -8,7 +8,7 @@ import { convertMarkdownToHtml, extractPlainText } from '../utils/html-to-markdo
 export function registerReplyEmailTool(server: McpServer, apiClient: ApiClient, config: Config): void {
   server.tool(
     'reply_email',
-    'Reply to an email message with proper threading and email client compatibility',
+    'Reply to an email message with proper threading',
     replyEmailSchema.shape,
     async (params): Promise<ToolResponse> => {
       try {
