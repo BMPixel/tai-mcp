@@ -100,7 +100,7 @@ describe('Send Email Tool', () => {
     });
   });
 
-  describe('New Format Field Implementation (TDD - these will fail initially)', () => {
+  describe('Updated Format Field Implementation (TDD - removing legacy html field)', () => {
     it('should send markdown email when format is "markdown"', async () => {
       const mockResponse = {
         messageId: 'test-message-id',
@@ -214,31 +214,17 @@ describe('Send Email Tool', () => {
       });
     });
 
-    it('should maintain backward compatibility with html field', async () => {
-      const mockResponse = {
-        messageId: 'test-message-id',
-        to: 'recipient@example.com',
-        subject: 'Test Subject',
-        timestamp: '2024-01-01T12:00:00.000Z'
-      };
-
-      mockApiClient.sendEmail.mockResolvedValue(mockResponse);
-
+    it('should reject html field parameter (legacy feature removed)', async () => {
       const params = {
         to: 'recipient@example.com',
         subject: 'Test Subject',
-        html: '<p>Legacy HTML content</p>'
+        html: '<p>Legacy HTML content should not work</p>'
       };
 
       const result = await toolHandler(params);
 
-      // Should still work with old html field
-      expect(mockApiClient.sendEmail).toHaveBeenCalledWith({
-        to: 'recipient@example.com',
-        from: 'testinstance.testuser@tai.chat',
-        subject: 'Test Subject',
-        html: '<p>Legacy HTML content</p>'
-      });
+      // Should return validation error for html field
+      expect(result.content[0].text).toContain('Error');
     });
 
     it('should validate format field accepts only markdown or html', async () => {
