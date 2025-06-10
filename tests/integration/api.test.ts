@@ -4,7 +4,7 @@ import { Config } from '../../src/types/tools.js';
 import { MessageResponse } from '../../src/types/api.js';
 
 // Integration tests - these test against a real API endpoint with two test accounts
-// They can be skipped in CI by setting TEST_INTEGRATION=false
+// They run by default and can be skipped by setting TEST_INTEGRATION=false
 
 const shouldRunIntegrationTests = process.env.TEST_INTEGRATION !== 'false';
 

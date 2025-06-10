@@ -13,6 +13,8 @@
     "start": "node build/src/index.js",
     "inspector": "node scripts/inspector.js",
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "test:unit": "TEST_INTEGRATION=false node --experimental-vm-modules node_modules/.bin/jest",
+    "test:integration": "node --experimental-vm-modules node_modules/.bin/jest tests/integration",
     "test:watch": "npm run test -- --watch",
     "lint": "eslint src tests --ext .ts",
     "clean": "rm -rf build"
