@@ -18,10 +18,11 @@ export function registerListInboxTool(server: McpServer, apiClient: ApiClient, c
         const instanceEmail = getInstanceEmail(config);
 
         // Fetch messages with the specified parameters
+        // Note: show_read parameter doesn't work in the API, so we fetch more and filter client-side
+        const fetchLimit = validatedParams.show_read === false ? 100 : validatedParams.limit; // Fetch more if filtering needed
         const messages = await apiClient.fetchMessages({
           prefix: config.instance,
-          show_read: validatedParams.show_read,
-          limit: validatedParams.limit,
+          limit: fetchLimit,
           offset: validatedParams.offset
         });
 
@@ -34,13 +35,30 @@ export function registerListInboxTool(server: McpServer, apiClient: ApiClient, c
           };
         }
 
+        // Client-side filtering since API show_read parameter doesn't work
+        let filteredMessages = messages.messages;
+        if (validatedParams.show_read === false) {
+          filteredMessages = messages.messages.filter(msg => !msg.is_read);
+          // Apply limit after filtering
+          filteredMessages = filteredMessages.slice(0, validatedParams.limit);
+          
+          if (filteredMessages.length === 0) {
+            return {
+              content: [{
+                type: "text",
+                text: `No unread emails found for ${instanceEmail}`
+              }]
+            };
+          }
+        }
+
         // Format the email list as a markdown table
         const tableHeader = `# Email Inbox (${instanceEmail})
 
 | ID | From | Subject | Date | Status |
 |---|---|---|---|---|`;
 
-        const tableRows = messages.messages.map(msg => {
+        const tableRows = filteredMessages.map(msg => {
           const subject = (msg.subject || '(No subject)').substring(0, 50);
           const from = msg.from.substring(0, 30);
           const date = new Date(msg.received_at).toLocaleString();
@@ -49,14 +67,16 @@ export function registerListInboxTool(server: McpServer, apiClient: ApiClient, c
           return `| ${msg.id} | ${from} | ${subject} | ${date} | ${status} |`;
         }).join('\n');
 
-        const summary = `\nShowing ${messages.messages.length} of ${messages.count} emails`;
+        const filteredSuffix = validatedParams.show_read === false ? ' unread' : '';
+        const summary = `\nShowing ${filteredMessages.length}${filteredSuffix} of ${messages.count} total emails`;
         const pagination = messages.has_more ? '\n\n*Use offset parameter to load more emails*' : '';
 
         const inboxContent = `${tableHeader}\n${tableRows}${summary}${pagination}`;
 
         logger.info('Email list retrieved successfully', { 
-          count: messages.messages.length,
+          filtered: filteredMessages.length,
           total: messages.count,
+          showRead: validatedParams.show_read,
           hasMore: messages.has_more
         });
 

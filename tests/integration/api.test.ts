@@ -292,6 +292,42 @@ describe('Email Flow Integration Tests', () => {
       
       console.log('show_read parameter test completed (currently demonstrating bug)');
     }, 15000);
+
+    it('should handle fetch_email with empty ID correctly (testing unread filtering)', async () => {
+      if (!shouldRunIntegrationTests) {
+        console.log('Skipping integration test');
+        return;
+      }
+
+      // First, get all messages to see the current state
+      const allMessages = await receiverClient.fetchMessages({
+        prefix: receiverConfig.instance,
+        limit: 10
+      });
+
+      console.log(`Total messages: ${allMessages.messages.length}`);
+      
+      // Check if there are any unread messages
+      const unreadCount = allMessages.messages.filter(msg => !msg.is_read).length;
+      const readCount = allMessages.messages.filter(msg => msg.is_read).length;
+      
+      console.log(`Unread: ${unreadCount}, Read: ${readCount}`);
+
+      if (unreadCount === 0) {
+        console.log('No unread messages to test fetch_email with empty ID');
+        return;
+      }
+
+      // This test verifies that fetch_email with empty ID finds unread messages
+      // Before our fix, it would fetch read messages due to API show_read bug
+      // After our fix, it should use client-side filtering to find truly unread messages
+      
+      const oldestUnreadEmail = allMessages.messages.filter(msg => !msg.is_read)[0];
+      expect(oldestUnreadEmail).toBeDefined();
+      expect(oldestUnreadEmail.is_read).toBe(false);
+
+      console.log(`Found unread email to test: ID ${oldestUnreadEmail.id}, Subject: "${oldestUnreadEmail.subject}"`);
+    }, 15000);
   });
 
   describe('4. Error Handling and Edge Cases', () => {

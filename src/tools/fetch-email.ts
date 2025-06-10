@@ -33,14 +33,27 @@ export function registerFetchEmailTool(server: McpServer, apiClient: ApiClient, 
           // Fetch oldest unread email
           logger.debug('Fetching oldest unread email', { instanceEmail });
           
+          // Since show_read parameter doesn't work in the API, we need to fetch more messages
+          // and filter client-side to find unread ones
           const messages = await apiClient.fetchMessages({
             prefix: config.instance,
-            show_read: false,
-            limit: 1,
+            limit: 50, // Fetch more messages to find unread ones
             offset: 0
           });
 
           if (!messages.messages || messages.messages.length === 0) {
+            return {
+              content: [{
+                type: "text",
+                text: `No emails found for ${instanceEmail}`
+              }]
+            };
+          }
+
+          // Filter for unread messages (client-side filtering since API parameter doesn't work)
+          const unreadMessages = messages.messages.filter(msg => !msg.is_read);
+          
+          if (unreadMessages.length === 0) {
             return {
               content: [{
                 type: "text",
@@ -49,7 +62,9 @@ export function registerFetchEmailTool(server: McpServer, apiClient: ApiClient, 
             };
           }
 
-          message = messages.messages[0];
+          // Get the oldest unread message (they should be sorted by received_at)
+          message = unreadMessages[unreadMessages.length - 1];
+          logger.debug('Found unread email', { messageId: message.id, subject: message.subject });
         }
 
         // Mark the message as read
