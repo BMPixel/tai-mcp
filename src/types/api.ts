@@ -95,3 +95,16 @@ export interface RegisterRequest {
   username: string;
   password: string;
 }
+
+export interface ReplyRequest {
+  text: string;
+  html?: string;
+  subject?: string;
+}
+
+export interface ReplyResponse {
+  messageId: string;
+  original_message_id: number;
+  subject: string;
+  timestamp: string;
+}

@@ -2,7 +2,7 @@
 
 ## Overview
 
-CF Mail Bridge is a Cloudflare Workers-based email bridge service that provides email message queuing functionality. It allows users to register, authenticate, and access their email messages through a RESTful API.
+CF Mail Bridge is a Cloudflare Workers-based email bridge service that provides email message queuing functionality. It allows users to register, authenticate, access their email messages, and send replies with proper email threading through a RESTful API.
 
 **Base URL**: `https://tai.chat`
 
@@ -314,7 +314,80 @@ curl -X PUT https://tai.chat/api/v1/messages/123/read \
   -H "Authorization: Bearer your_token"
 ```
 
-### 8. Send Email
+### 8. Reply to Message
+
+**Endpoint**: `POST /api/v1/messages/{messageId}/reply`
+
+**Description**: Reply to a specific message with proper email threading headers that email clients can understand
+
+**Headers**:
+```
+Authorization: Bearer <token>
+```
+
+**Path Parameters**:
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `messageId` | integer | Message ID to reply to |
+
+**Request Body**:
+```json
+{
+  "text": "Reply message content",
+  "html": "<p>Optional HTML content</p>",
+  "subject": "Optional custom subject"
+}
+```
+
+**Field Requirements**:
+- `text` (string) - **Required** - Plain text reply content
+- `html` (string) - **Optional** - HTML reply content
+- `subject` (string) - **Optional** - Custom subject line (defaults to "Re: Original Subject")
+
+**Email Threading Features**:
+- Generates RFC-compliant Message-ID for the reply
+- Sets proper In-Reply-To header referencing original message
+- Builds References header chain for conversation threading
+- Uses original recipient address as reply sender
+- Automatically prefixes subject with "Re:" if not already present
+
+**Response (Success)**:
+```json
+{
+  "success": true,
+  "data": {
+    "messageId": "reply_message_id_from_resend",
+    "original_message_id": 123,
+    "subject": "Re: Original Subject",
+    "timestamp": "2024-01-01T12:00:00.000Z"
+  }
+}
+```
+
+**Examples**:
+
+Basic reply:
+```bash
+curl -X POST https://tai.chat/api/v1/messages/123/reply \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your_token" \
+  -d '{"text": "Thank you for your message!"}'
+```
+
+Reply with HTML and custom subject:
+```bash
+curl -X POST https://tai.chat/api/v1/messages/123/reply \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your_token" \
+  -d '{"text": "Thank you!", "html": "<p>Thank you for your <strong>message</strong>!</p>", "subject": "Re: Important Discussion"}'
+```
+
+**Error Responses**:
+- `404 NOT_FOUND` - Original message not found or user doesn't have access
+- `400 INVALID_REQUEST` - Missing or empty text content
+- `401 UNAUTHORIZED` - Missing or invalid authentication token
+
+### 9. Send Email
 
 **Endpoint**: `POST /api/v1/send-email`
 
@@ -381,7 +454,7 @@ curl -X POST https://tai.chat/api/v1/send-email \
   -d '{"to": "test@example.com", "from": "alice@tai.chat", "subject": "Test Email", "message": "Hello World", "html": "<p>Hello <strong>World</strong></p>"}'
 ```
 
-### 9. Get Unread Count
+### 10. Get Unread Count
 
 **Endpoint**: `GET /api/v1/unread`
 
@@ -423,7 +496,7 @@ curl -X GET "https://tai.chat/api/v1/unread?to=desktop.alice@tai.chat&from=sende
 - Both `to` and `from` parameters must be valid email addresses
 - No authentication required
 
-### 10. Health Check
+### 11. Health Check
 
 **Endpoint**: `GET /health`
 
@@ -497,6 +570,28 @@ interface MessageResponse {
 }
 ```
 
+### Reply Request
+```typescript
+interface ReplyRequest {
+  text: string;           // Required - Plain text reply content
+  html?: string;          // Optional - HTML reply content
+  subject?: string;       // Optional - Custom subject (defaults to "Re: Original Subject")
+}
+```
+
+### Reply Response
+```typescript
+interface ReplyResponse {
+  success: true;
+  data: {
+    messageId: string;              // ID of the sent reply from email service
+    original_message_id: number;    // ID of the original message being replied to
+    subject: string;                // Final subject line used
+    timestamp: string;              // ISO timestamp when reply was sent
+  };
+}
+```
+
 ## Web Interface Endpoints
 
 The service also provides web interface endpoints:
@@ -515,6 +610,7 @@ The service automatically processes incoming emails via Cloudflare's Email Routi
 - Messages are parsed using postal-mime library and stored in the database
 - HTML content is preserved as-is, with HTML-to-text conversion for text fallback
 - Users can access their messages via the API
+- Users can send threaded replies with proper email client compatibility
 
 ### Email Authorization
 
@@ -524,6 +620,16 @@ For outbound emails, the service implements sender authorization to prevent spoo
 - Authorized formats: `username@tai.chat` or `prefix.username@tai.chat`
 - Example: User "alice" can send from "alice@tai.chat" or "desktop.alice@tai.chat"
 - Unauthorized sender addresses will result in a `FORBIDDEN` error
+
+### Email Threading
+
+The service implements RFC-compliant email threading for replies:
+
+- **Message-ID Generation**: Each reply gets a unique Message-ID in format `<reply-{timestamp}-{random}@tai.chat>`
+- **In-Reply-To Header**: References the original message's Message-ID for direct threading
+- **References Header**: Builds a complete conversation chain for multi-level threading
+- **Subject Handling**: Automatically prefixes subjects with "Re:" unless already present
+- **Client Compatibility**: Works with Gmail, Outlook, Apple Mail, and other RFC-compliant email clients
 
 ## Rate Limiting
 

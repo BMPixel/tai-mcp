@@ -5,7 +5,9 @@ import {
   MessageResponse, 
   SendEmailResponse, 
   UnreadCountResponse,
-  SendEmailRequest 
+  SendEmailRequest,
+  ReplyRequest,
+  ReplyResponse
 } from '../types/api.js';
 import { AuthService } from './auth.js';
 import { logger } from '../utils/logger.js';
@@ -122,6 +124,27 @@ export class ApiClient {
       throw new Error(`Failed to get unread count: ${response.error?.message || 'Unknown error'}`);
     }
 
+    return response.data;
+  }
+
+  async replyToMessage(messageId: string, params: ReplyRequest): Promise<ReplyResponse> {
+    await this.authService.ensureAuthenticated();
+    
+    logger.info('Replying to message', { messageId, subject: params.subject });
+
+    const response = await this.makeAuthenticatedRequest(`/api/v1/messages/${messageId}/reply`, {
+      method: 'POST',
+      body: JSON.stringify(params)
+    });
+
+    if (!response.success || !response.data) {
+      throw new Error(`Failed to reply to message: ${response.error?.message || 'Unknown error'}`);
+    }
+
+    logger.info('Reply sent successfully', { 
+      replyMessageId: response.data.messageId,
+      originalMessageId: messageId
+    });
     return response.data;
   }
 

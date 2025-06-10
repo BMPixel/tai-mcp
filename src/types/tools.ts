@@ -40,10 +40,27 @@ export const listInboxSchema = z.object({
     .describe('Whether to include read emails in the list (default: false)')
 });
 
+// reply_email tool schema
+export const replyEmailSchema = z.object({
+  message_id: z.string()
+    .min(1, 'Message ID is required')
+    .describe('The ID of the original message to reply to'),
+  text: z.string()
+    .min(1, 'Reply text content is required')
+    .describe('Plain text content for the reply message'),
+  html: z.string()
+    .optional()
+    .describe('Optional HTML content for the reply message'),
+  subject: z.string()
+    .optional()
+    .describe('Optional custom subject line. If not provided, will default to "Re: Original Subject"')
+});
+
 // Type inference
 export type SendEmailParams = z.infer<typeof sendEmailSchema>;
 export type FetchEmailParams = z.infer<typeof fetchEmailSchema>;
 export type ListInboxParams = z.infer<typeof listInboxSchema>;
+export type ReplyEmailParams = z.infer<typeof replyEmailSchema>;
 
 // MCP tool response interface
 export interface ToolResponse {

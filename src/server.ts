@@ -5,6 +5,7 @@ import { ApiClient } from './services/api-client.js';
 import { registerSendEmailTool } from './tools/send-email.js';
 import { registerFetchEmailTool } from './tools/fetch-email.js';
 import { registerListInboxTool } from './tools/list-inbox.js';
+import { registerReplyEmailTool } from './tools/reply-email.js';
 import { getInstanceEmail } from './utils/config.js';
 import { logger } from './utils/logger.js';
 
@@ -28,6 +29,7 @@ export class McpEmailServer {
     registerSendEmailTool(this.server, this.apiClient, this.config);
     registerFetchEmailTool(this.server, this.apiClient, this.config);
     registerListInboxTool(this.server, this.apiClient, this.config);
+    registerReplyEmailTool(this.server, this.apiClient, this.config);
     
     logger.info('All MCP tools registered successfully');
   }
@@ -55,13 +57,15 @@ export class McpEmailServer {
             availableTools: [
               'send_email',
               'fetch_email', 
-              'list_inbox'
+              'list_inbox',
+              'reply_email'
             ],
             capabilities: {
               sendEmails: true,
               receiveEmails: true,
               markAsRead: true,
-              listMessages: true
+              listMessages: true,
+              replyToEmails: true
             }
           }, null, 2)
         }]
