@@ -1,0 +1,127 @@
+/**
+ * Customize default theme styling by overriding CSS variables:
+ * https://github.com/vuejs/vitepress/blob/main/src/client/theme-default/styles/vars.css
+ */
+
+:root {
+  --vp-c-brand-1: #3b82f6;
+  --vp-c-brand-2: #60a5fa;
+  --vp-c-brand-3: #93c5fd;
+  --vp-c-brand-soft: rgba(59, 130, 246, 0.14);
+}
+
+.dark {
+  --vp-c-brand-1: #60a5fa;
+  --vp-c-brand-2: #3b82f6;
+  --vp-c-brand-3: #1d4ed8;
+  --vp-c-brand-soft: rgba(96, 165, 250, 0.16);
+}
+
+/* Custom styles for code blocks */
+.vp-code-group .tabs {
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+/* Custom styles for API documentation */
+.api-endpoint {
+  padding: 16px;
+  margin: 16px 0;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+}
+
+.api-endpoint .method {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-right: 8px;
+}
+
+.api-endpoint .method.get {
+  background: #10b981;
+  color: white;
+}
+
+.api-endpoint .method.post {
+  background: #3b82f6;
+  color: white;
+}
+
+.api-endpoint .method.put {
+  background: #f59e0b;
+  color: white;
+}
+
+.api-endpoint .method.delete {
+  background: #ef4444;
+  color: white;
+}
+
+/* Parameter table styling */
+.param-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.param-table th,
+.param-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.param-table th {
+  background: var(--vp-c-bg-soft);
+  font-weight: 600;
+}
+
+.param-table .param-required {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.param-table .param-optional {
+  color: #6b7280;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Custom tip styling */
+.custom-block.tip {
+  border-color: var(--vp-c-brand-1);
+}
+
+.custom-block.warning {
+  border-color: #f59e0b;
+}
+
+.custom-block.danger {
+  border-color: #ef4444;
+}
