@@ -8,7 +8,7 @@ import { convertMarkdownToHtml } from '../utils/html-to-markdown.js';
 export function registerSendEmailTool(server: McpServer, apiClient: ApiClient, config: Config): void {
   server.tool(
     'send_email',
-    'Send an email through the CF Mail Bridge API with markdown or HTML content',
+    'Send an email with markdown or HTML content',
     sendEmailSchema.shape,
     async (params): Promise<ToolResponse> => {
       try {
