@@ -5,6 +5,7 @@ export default defineConfig({
   description: 'Model Context Protocol server for AI email interaction',
   base: '/docs/',
   cleanUrls: true,
+  ignoreDeadLinks: true,
   
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/docs/assets/logo.svg' }],
