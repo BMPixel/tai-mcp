@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "tai-mcp": {
+      "type": "stdio",
+      "command": "/Users/panwenbo/Repos/tai/tai-mcp/build/src/index.js",
+      "args": [],
+      "env": {
+        "NAME": "testuser",
+        "PASSWORD": "testpass123",
+        "INSTANCE": "test",
+        "LOG_LEVEL": "info",
+        "API_TIMEOUT": "30000",
+        "POLL_INTERVAL": "5000",
+        "API_BASE_URL": "https://tai.chat",
+        "LIVE_PROMPT": "You have received a new email. Please read it, understand what the sender is asking for, and provide an appropriate response. Send your response back to the sender.",
+        "MAX_RETRIES": "3",
+        "RETRY_DELAY": "5000",
+        "CLAUDE_TIMEOUT": "300000",
+        "ENABLE_ACKNOWLEDGMENT": "false"
+      }
+    }
+  }
+}

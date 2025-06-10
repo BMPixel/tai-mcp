@@ -15,9 +15,9 @@
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
     "lint": "eslint src tests --ext .ts",
     "clean": "rm -rf build",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:dev": "npx vitepress dev docs",
+    "docs:build": "npx vitepress build docs",
+    "docs:preview": "npx vitepress preview docs"
   },
   "keywords": [
     "mcp",
@@ -39,7 +39,7 @@
   "devDependencies": {
     "@modelcontextprotocol/inspector": "^0.14.0",
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.11.19",
+    "@types/node": "^20.19.0",
     "@types/turndown": "^5.0.5",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
@@ -47,7 +47,9 @@
     "eslint": "^8.56.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitepress": "^1.6.3",
+    "vue": "^3.5.16"
   },
   "engines": {
     "node": ">=18.0.0"

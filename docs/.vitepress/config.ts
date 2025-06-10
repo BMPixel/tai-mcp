@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'TAI MCP Email Server',
   description: 'Model Context Protocol server for AI email interaction',
-  base: '/docs/',
+  base: '/',
   cleanUrls: true,
   ignoreDeadLinks: true,
   
