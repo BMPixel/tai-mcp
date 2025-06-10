@@ -3,6 +3,7 @@ import { replyEmailSchema, type ReplyEmailParams, type ToolResponse } from '../t
 import { ApiClient } from '../services/api-client.js';
 import { Config } from '../types/tools.js';
 import { logger } from '../utils/logger.js';
+import { convertMarkdownToHtml, extractPlainText } from '../utils/html-to-markdown.js';
 
 export function registerReplyEmailTool(server: McpServer, apiClient: ApiClient, config: Config): void {
   server.tool(
@@ -18,10 +19,35 @@ export function registerReplyEmailTool(server: McpServer, apiClient: ApiClient, 
         
         const validatedParams = replyEmailSchema.parse(params);
         
-        // Prepare the reply request
+        // Determine content and format
+        let htmlContent: string;
+        
+        if (validatedParams.html) {
+          // Backward compatibility: use legacy html field directly
+          htmlContent = validatedParams.html;
+        } else if (validatedParams.text) {
+          // Backward compatibility: treat text field as markdown
+          htmlContent = convertMarkdownToHtml(validatedParams.text);
+        } else if (validatedParams.content) {
+          // Use new content field with format conversion
+          const format = validatedParams.format || 'markdown';
+          
+          if (format === 'markdown') {
+            htmlContent = convertMarkdownToHtml(validatedParams.content);
+          } else if (format === 'html') {
+            htmlContent = validatedParams.content;
+          } else {
+            throw new Error(`Invalid format: ${format}. Must be "markdown" or "html".`);
+          }
+        } else {
+          // Default content
+          htmlContent = '<p>This reply was sent via the TAI MCP Email Server.</p>';
+        }
+        
+        // Prepare the reply request (API requires both text and html)
         const replyRequest = {
-          text: validatedParams.text,
-          html: validatedParams.html,
+          text: extractPlainText(htmlContent),
+          html: htmlContent,
           subject: validatedParams.subject
         };
 

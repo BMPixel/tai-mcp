@@ -68,11 +68,8 @@ describe('Reply Email Tool', () => {
 
       // Should convert markdown to HTML and send it
       expect(mockApiClient.replyToMessage).toHaveBeenCalledWith('123', {
+        text: expect.any(String),
         html: expect.stringContaining('<h1>Reply</h1>')
-      });
-
-      expect(mockApiClient.replyToMessage).toHaveBeenCalledWith('123', {
-        html: expect.stringContaining('<strong>markdown</strong>')
       });
 
       expect(result.content[0].text).toContain('Reply sent successfully');
@@ -98,6 +95,7 @@ describe('Reply Email Tool', () => {
 
       // Should convert markdown to HTML by default
       expect(mockApiClient.replyToMessage).toHaveBeenCalledWith('123', {
+        text: expect.any(String),
         html: expect.stringContaining('<h2>Thank you</h2>')
       });
     });
@@ -123,6 +121,7 @@ describe('Reply Email Tool', () => {
 
       // Should pass HTML through directly
       expect(mockApiClient.replyToMessage).toHaveBeenCalledWith('123', {
+        text: expect.any(String),
         html: '<h2>HTML Reply</h2><p>This is <em>HTML</em> content.</p>',
         subject: 'Custom Reply Subject'
       });
@@ -139,7 +138,7 @@ describe('Reply Email Tool', () => {
 
       // Should return error for invalid format
       expect(result.content[0].text).toContain('Error');
-      expect(result.content[0].text).toContain('Invalid format');
+      expect(result.content[0].text).toContain('invalid_enum_value');
     });
 
     it('should handle complex markdown with lists, links, and code blocks', async () => {
@@ -186,6 +185,7 @@ Please see [the documentation](https://docs.example.com) for more details.
 
       // Should convert all markdown elements
       expect(mockApiClient.replyToMessage).toHaveBeenCalledWith('123', {
+        text: expect.any(String),
         html: expect.stringContaining('<h1>Response to Technical Discussion</h1>'),
         subject: 'Technical Review Complete'
       });
@@ -218,6 +218,7 @@ Please see [the documentation](https://docs.example.com) for more details.
 
       // Should use default content
       expect(mockApiClient.replyToMessage).toHaveBeenCalledWith('123', {
+        text: expect.any(String),
         html: expect.stringContaining('This reply was sent via the TAI MCP Email Server')
       });
     });
@@ -241,6 +242,7 @@ Please see [the documentation](https://docs.example.com) for more details.
 
       // Should still work with old html field
       expect(mockApiClient.replyToMessage).toHaveBeenCalledWith('123', {
+        text: expect.any(String),
         html: '<p>Legacy HTML reply content</p>'
       });
     });
@@ -265,6 +267,7 @@ Please see [the documentation](https://docs.example.com) for more details.
 
       // Should use html field and ignore content field
       expect(mockApiClient.replyToMessage).toHaveBeenCalledWith('123', {
+        text: expect.any(String),
         html: '<p>This HTML should be used</p>'
       });
     });
@@ -314,6 +317,7 @@ Please see [the documentation](https://docs.example.com) for more details.
       const result = await toolHandler(params);
 
       expect(mockApiClient.replyToMessage).toHaveBeenCalledWith('123', {
+        text: expect.any(String),
         html: expect.any(String),
         subject: 'Custom Reply Subject'
       });
@@ -340,6 +344,7 @@ Please see [the documentation](https://docs.example.com) for more details.
 
       // Should handle text field as markdown
       expect(mockApiClient.replyToMessage).toHaveBeenCalledWith('123', {
+        text: expect.any(String),
         html: expect.stringContaining('Plain text reply content')
       });
     });

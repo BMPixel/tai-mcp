@@ -15,10 +15,7 @@ export const sendEmailSchema = z.object({
   format: z.enum(['markdown', 'html'])
     .default('markdown')
     .optional()
-    .describe('Content format: "markdown" (default) converts content to HTML, "html" uses content as-is'),
-  html: z.string()
-    .optional()
-    .describe('Legacy HTML message body content (for backward compatibility)')
+    .describe('Content format: "markdown" (default) converts content to HTML, "html" uses content as-is')
 });
 
 // fetch_email tool schema
@@ -52,12 +49,19 @@ export const replyEmailSchema = z.object({
   message_id: z.string()
     .min(1, 'Message ID is required')
     .describe('The ID of the original message to reply to'),
+  content: z.string()
+    .optional()
+    .describe('Reply message content (markdown or HTML based on format parameter)'),
+  format: z.enum(['markdown', 'html'])
+    .default('markdown')
+    .optional()
+    .describe('Content format: "markdown" (default) converts content to HTML, "html" uses content as-is'),
   text: z.string()
-    .min(1, 'Reply text content is required')
-    .describe('Plain text content for the reply message'),
+    .optional()
+    .describe('Legacy plain text content (for backward compatibility)'),
   html: z.string()
     .optional()
-    .describe('Optional HTML content for the reply message'),
+    .describe('Legacy HTML content (for backward compatibility)'),
   subject: z.string()
     .optional()
     .describe('Optional custom subject line. If not provided, will default to "Re: Original Subject"')

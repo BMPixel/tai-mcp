@@ -128,3 +128,6 @@ When running in live mode, the server:
 3. Claude Code uses the same MCP server to fetch, process, and respond to emails
 
 This creates a fully automated email processing workflow where Claude Code can handle incoming emails autonomously.
+
+## Development Notes
+- Current codebase is in active development, there is no need for backward compatibility or mention features that no longer exists

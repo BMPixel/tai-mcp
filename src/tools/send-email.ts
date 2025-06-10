@@ -19,11 +19,8 @@ export function registerSendEmailTool(server: McpServer, apiClient: ApiClient, c
         // Determine content and format
         let htmlContent: string;
         
-        if (validatedParams.html) {
-          // Backward compatibility: use legacy html field directly
-          htmlContent = validatedParams.html;
-        } else if (validatedParams.content) {
-          // Use new content field with format conversion
+        if (validatedParams.content) {
+          // Use content field with format conversion
           const format = validatedParams.format || 'markdown';
           
           if (format === 'markdown') {

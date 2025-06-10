@@ -47,8 +47,8 @@ describe('Send Email Tool', () => {
     toolHandler = (mockServer.tool as jest.Mock).mock.calls[0][3];
   });
 
-  describe('Current Implementation (before changes)', () => {
-    it('should send HTML email successfully', async () => {
+  describe('Current Implementation (updated)', () => {
+    it('should send HTML email successfully with content field', async () => {
       const mockResponse = {
         messageId: 'test-message-id',
         to: 'recipient@example.com',
@@ -61,7 +61,8 @@ describe('Send Email Tool', () => {
       const params = {
         to: 'recipient@example.com',
         subject: 'Test Subject',
-        html: '<p>Test HTML content</p>'
+        content: '<p>Test HTML content</p>',
+        format: 'html'
       };
 
       const result = await toolHandler(params);
