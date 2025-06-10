@@ -18,6 +18,7 @@ export function registerSendEmailTool(server: McpServer, apiClient: ApiClient, c
         // Prepare the email request
         const emailRequest = {
           to: validatedParams.to || config.userEmail || '',
+          from: `${config.instance}.${config.name}@tai.chat`,
           subject: validatedParams.subject || 'Email from CF Mail Bridge',
           html: validatedParams.html || '<p>This email was sent via the TAI MCP Email Server.</p>'
         };
