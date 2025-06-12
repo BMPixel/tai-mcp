@@ -105,7 +105,7 @@ export class EmailPoller {
       });
 
       // Invoke Claude Code with the specified prompt
-      const command = 'claude code -p "Please resolve the unread email and send the response back to the user after the email is resolved"';
+      const command = 'claude code --dangerously-skip-permissions -p "Please resolve the unread email and send the response back to the user after the email is resolved"';
       
       logger.info('Invoking Claude Code', { command });
       
