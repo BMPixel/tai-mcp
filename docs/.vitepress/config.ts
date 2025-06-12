@@ -1,8 +1,8 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
-  title: 'TAI MCP Email Server',
-  description: 'Model Context Protocol server for AI email interaction',
+  title: 'tai-mcp',
+  description: 'Emailing with your agent - Model Context Protocol server for AI email interaction',
   base: '/',
   cleanUrls: true,
   ignoreDeadLinks: true,
@@ -12,9 +12,9 @@ export default defineConfig({
     ['meta', { name: 'theme-color', content: '#3c82f6' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:locale', content: 'en' }],
-    ['meta', { property: 'og:title', content: 'TAI MCP Email Server | AI Email Interaction' }],
-    ['meta', { property: 'og:site_name', content: 'TAI MCP Email Server' }],
-    ['meta', { property: 'og:url', content: 'https://tai.chat/docs/' }],
+    ['meta', { property: 'og:title', content: 'tai-mcp | Emailing with your agent' }],
+    ['meta', { property: 'og:site_name', content: 'tai-mcp' }],
+    ['meta', { property: 'og:url', content: 'https://docs.tai.chat/' }],
   ],
 
   themeConfig: {
@@ -24,12 +24,11 @@ export default defineConfig({
       { text: 'Guide', link: '/guide/' },
       { text: 'API', link: '/api/' },
       { text: 'Development', link: '/development/' },
-      { text: 'Examples', link: '/examples/' },
       {
         text: 'Links',
         items: [
-          { text: 'CF Mail Bridge', link: 'https://tai.chat' },
-          { text: 'GitHub', link: 'https://github.com/anthropics/tai-mcp' },
+          { text: 'NPM Package', link: 'https://www.npmjs.com/package/tai-mcp' },
+          { text: 'GitHub', link: 'https://github.com/BMPixel/tai-mcp' },
           { text: 'MCP Specification', link: 'https://spec.modelcontextprotocol.io/' }
         ]
       }
@@ -53,7 +52,6 @@ export default defineConfig({
           items: [
             { text: 'Overview', link: '/api/' },
             { text: 'MCP Tools', link: '/api/tools' },
-            { text: 'CF Mail Bridge API', link: '/api/cf-mail-bridge' },
             { text: 'Authentication', link: '/api/authentication' }
           ]
         }
@@ -69,35 +67,15 @@ export default defineConfig({
           ]
         }
       ],
-      '/deployment/': [
-        {
-          text: 'Deployment',
-          items: [
-            { text: 'Overview', link: '/deployment/' },
-            { text: 'Cloudflare Pages', link: '/deployment/cloudflare-pages' },
-            { text: 'Live Mode', link: '/deployment/live-mode' }
-          ]
-        }
-      ],
-      '/examples/': [
-        {
-          text: 'Examples',
-          items: [
-            { text: 'Overview', link: '/examples/' },
-            { text: 'Basic Usage', link: '/examples/basic-usage' },
-            { text: 'Advanced Scenarios', link: '/examples/advanced-scenarios' }
-          ]
-        }
-      ]
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/anthropics/tai-mcp' }
+      { icon: 'github', link: 'https://github.com/BMPixel/tai-mcp' }
     ],
 
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2024 TAI MCP Email Server'
+      copyright: 'Copyright © 2024 tai-mcp'
     },
 
     search: {
@@ -105,7 +83,7 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: 'https://github.com/anthropics/tai-mcp/edit/main/tai-mcp/docs/:path',
+      pattern: 'https://github.com/BMPixel/tai-mcp/edit/main/docs/:path',
       text: 'Edit this page on GitHub'
     },
 

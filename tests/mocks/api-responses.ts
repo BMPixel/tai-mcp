@@ -4,7 +4,7 @@ export const mockLoginResponse: ApiResponse<LoginResponse> = {
   success: true,
   data: {
     token: 'mock-jwt-token',
-    expires_at: '2025-06-10T12:00:00.000Z'
+    expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours from now
   }
 };
 

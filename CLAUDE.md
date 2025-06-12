@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-TAI MCP Email Server is a Model Context Protocol (MCP) server that enables AI agents to interact with email through the CF Mail Bridge API. The server operates in multiple modes and provides email functionality to MCP-compatible clients like Claude Desktop.
+tai-mcp is a Model Context Protocol (MCP) server that enables AI agents to interact with email through email services. The server operates in multiple modes and provides email functionality to MCP-compatible clients like Claude Desktop.
 
 ## Development Commands
 
@@ -40,7 +40,7 @@ The codebase follows a modular architecture:
 - **Commands**: `src/commands/` - CLI command implementations (register, live)
 
 ### Key Services
-- **ApiClient** (`src/services/api-client.ts`): Centralized CF Mail Bridge API communication with JWT authentication
+- **ApiClient** (`src/services/api-client.ts`): Centralized API communication with JWT authentication
 - **AuthService** (`src/services/auth.ts`): User registration and login with token management  
 - **EmailPoller** (`src/services/email-poller.ts`): Monitors for new emails in live mode
 - **Markdown Conversion** (`src/utils/html-to-markdown.ts`): Bidirectional markdown ↔ HTML conversion
@@ -54,7 +54,7 @@ The codebase follows a modular architecture:
 
 ### Required Environment Variables
 ```bash
-NAME=username          # CF Mail Bridge username
+NAME=username          # Username
 PASSWORD=password      # Authentication password
 INSTANCE=instance      # Agent instance identifier (e.g., "desktop")
 ```
@@ -77,7 +77,7 @@ The instance email format is: `{INSTANCE}.{NAME}@tai.chat`
 - **Two-Account Testing**: Sender account sends email to receiver account  
 - **Complete Flow Validation**: Send → Receive → Parse → Process → Mark Read
 - **Bug Detection**: Tests authorization, filtering, and content parsing
-- **Real API Behavior**: Uses actual CF Mail Bridge API endpoints
+- **Real API Behavior**: Uses actual email service API endpoints
 - **Automatic**: Run by default with `npm test`
 
 ### Unit Tests
@@ -123,7 +123,7 @@ Each MCP tool follows a consistent pattern:
 ## Live Mode Operation
 
 When running in live mode, the server:
-1. Polls CF Mail Bridge API every 5 seconds for unread emails
+1. Polls email service API every 5 seconds for unread emails
 2. Executes `claude code -p "Please resolve the unread email and send the response back to the user after the email is resolved"` when new emails are detected
 3. Claude Code uses the same MCP server to fetch, process, and respond to emails
 
@@ -131,3 +131,6 @@ This creates a fully automated email processing workflow where Claude Code can h
 
 ## Development Notes
 - Current codebase is in active development, there is no need for backward compatibility or mention features that no longer exists
+
+## Package Information
+- NPM Package: https://www.npmjs.com/package/tai-mcp

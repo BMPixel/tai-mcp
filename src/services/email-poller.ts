@@ -27,14 +27,47 @@ export class EmailPoller {
     });
 
     // Initial check
-    await this.checkForNewEmails();
+    try {
+      await this.checkForNewEmails();
+    } catch (error) {
+      // Enhanced error logging for initial check
+      const errorDetails: any = {
+        operation: 'initialCheck',
+        timestamp: new Date().toISOString()
+      };
+
+      if (error instanceof Error) {
+        errorDetails.errorMessage = error.message;
+        errorDetails.errorName = error.name;
+        errorDetails.stack = error.stack;
+      } else {
+        errorDetails.error = error;
+      }
+
+      logger.error('Error during initial email check', errorDetails);
+    }
 
     // Set up polling interval
     this.pollInterval = setInterval(async () => {
       try {
         await this.checkForNewEmails();
       } catch (error) {
-        logger.error('Error during email polling', { error });
+        // Enhanced error logging for polling interval errors
+        const errorDetails: any = {
+          operation: 'pollingInterval',
+          timestamp: new Date().toISOString(),
+          isPolling: this.polling
+        };
+
+        if (error instanceof Error) {
+          errorDetails.errorMessage = error.message;
+          errorDetails.errorName = error.name;
+          errorDetails.stack = error.stack;
+        } else {
+          errorDetails.error = error;
+        }
+
+        logger.error('Error during email polling interval', errorDetails);
       }
     }, this.config.pollInterval);
   }
@@ -92,44 +125,100 @@ export class EmailPoller {
         await this.processNewEmail(message);
       }
     } catch (error) {
-      logger.error('Failed to check for new emails', { error });
+      // Enhanced error logging for API failures
+      const errorDetails: any = {
+        operation: 'checkForNewEmails',
+        timestamp: new Date().toISOString(),
+        config: {
+          instance: this.config.instance,
+          pollInterval: this.config.pollInterval
+        }
+      };
+
+      if (error instanceof Error) {
+        errorDetails.errorMessage = error.message;
+        errorDetails.errorName = error.name;
+        errorDetails.stack = error.stack;
+      } else {
+        errorDetails.error = error;
+      }
+
+      logger.error('Failed to check for new emails - API call failed', errorDetails);
     }
   }
 
   private async processNewEmail(message: any): Promise<void> {
+    // Invoke Claude with the specified prompt
+    const command = 'claude --dangerously-skip-permissions -p "Please resolve the unread email and send the response back to the user after the email is resolved"';
+    
     try {
       logger.info('Processing new email', {
         messageId: message.id,
         from: message.from,
         subject: message.subject
       });
-
-      // Invoke Claude Code with the specified prompt
-      const command = 'claude code --dangerously-skip-permissions -p "Please resolve the unread email and send the response back to the user after the email is resolved"';
       
-      logger.info('Invoking Claude Code', { command });
+      logger.info('Invoking Claude', { command });
       
       const { stdout, stderr } = await execAsync(command, {
         timeout: 300000, // 5 minute timeout
         env: {
           ...process.env,
-          // Pass through current environment variables so Claude Code has access to the same config
+          // Pass through current environment variables so Claude has access to the same config
         }
       });
 
+      // Log both stdout and stderr for better debugging
       if (stderr) {
-        logger.warn('Claude Code stderr output', { stderr });
+        logger.warn('Claude stderr output', { 
+          messageId: message.id,
+          stderr: stderr.substring(0, 1000) // Log first 1000 chars of stderr
+        });
       }
 
-      logger.info('Claude Code invocation completed', { 
+      if (stdout) {
+        logger.info('Claude stdout output', { 
+          messageId: message.id,
+          stdout: stdout.substring(0, 500) // Log first 500 chars of stdout
+        });
+      }
+
+      logger.info('Claude invocation completed successfully', { 
         messageId: message.id,
-        stdout: stdout.substring(0, 200) // Log first 200 chars
+        hasStdout: !!stdout,
+        hasStderr: !!stderr
       });
     } catch (error) {
-      logger.error('Failed to process new email', {
+      // Enhanced error logging for Claude execution failures
+      const errorDetails: any = {
         messageId: message.id,
-        error: error instanceof Error ? error.message : error
-      });
+        command,
+        timestamp: new Date().toISOString()
+      };
+
+      if (error instanceof Error) {
+        errorDetails.errorMessage = error.message;
+        errorDetails.errorName = error.name;
+        errorDetails.stack = error.stack;
+        
+        // Check if it's an exec error with additional properties
+        if ('code' in error) {
+          errorDetails.exitCode = (error as any).code;
+        }
+        if ('signal' in error) {
+          errorDetails.signal = (error as any).signal;
+        }
+        if ('stdout' in error) {
+          errorDetails.stdout = (error as any).stdout;
+        }
+        if ('stderr' in error) {
+          errorDetails.stderr = (error as any).stderr;
+        }
+      } else {
+        errorDetails.error = error;
+      }
+
+      logger.error('Failed to process new email - Claude execution failed', errorDetails);
     }
   }
 

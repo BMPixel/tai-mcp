@@ -2,9 +2,9 @@
 layout: home
 
 hero:
-  name: "TAI MCP Email Server"
-  text: "AI Email Interaction Made Simple"
-  tagline: Model Context Protocol server enabling AI agents to interact with email through the CF Mail Bridge API
+  name: "tai-mcp"
+  text: "Emailing with your agent"
+  tagline: Model Context Protocol server enabling AI agents to send, receive, and manage emails seamlessly
   image:
     src: /assets/logo.svg
     alt: TAI MCP Email Server
@@ -17,7 +17,7 @@ hero:
       link: /api/
     - theme: alt
       text: GitHub
-      link: https://github.com/anthropics/tai-mcp
+      link: https://github.com/BMPixel/tai-mcp
 
 features:
   - icon: 🤖
@@ -36,9 +36,9 @@ features:
     title: Secure Authentication  
     details: JWT-based authentication with PBKDF2-SHA256 password hashing for secure API access.
   
-  - icon: 🌐
-    title: Cloudflare Integration
-    details: Seamlessly integrates with CF Mail Bridge API running on Cloudflare Workers with D1 database.
+  - icon: 🛡️
+    title: Secure & Reliable
+    details: JWT-based authentication with automatic token refresh and comprehensive error handling for reliable operation.
   
   - icon: 🧪
     title: Comprehensive Testing
@@ -47,36 +47,15 @@ features:
 
 ## Quick Start
 
-Get up and running with TAI MCP Email Server in minutes:
+Get up and running with tai-mcp in minutes:
 
-### 1. Install Dependencies
-
-```bash
-npm install
-```
-
-### 2. Configure Environment
+### 1. Register User
 
 ```bash
-# Required environment variables
-export NAME=username          # CF Mail Bridge username  
-export PASSWORD=password      # Authentication password
-export INSTANCE=desktop       # Agent instance identifier
+npx tai-mcp register
 ```
 
-### 3. Register User
-
-```bash
-npm start register
-```
-
-### 4. Start MCP Server
-
-```bash
-npm start
-```
-
-### 5. Test with Claude Desktop
+### 2. Configure Claude Desktop
 
 Add to your Claude Desktop MCP configuration:
 
@@ -85,68 +64,87 @@ Add to your Claude Desktop MCP configuration:
   "mcpServers": {
     "tai-email": {
       "command": "npx",
-      "args": ["tai-mcp-email-server"]
+      "args": ["-y", "tai-mcp"],
+      "env": {
+        "NAME": "your-username",
+        "PASSWORD": "your-password",
+        "INSTANCE": "desktop"
+      }
     }
   }
 }
 ```
 
-## Architecture Overview
+### 3. Restart Claude Desktop
 
-TAI MCP Email Server consists of two main components:
+Restart Claude Desktop to load the MCP server, then start emailing with your agent!
 
-- **CF Mail Bridge** - Cloudflare Workers email service providing REST API
-- **TAI MCP Server** - MCP server exposing email tools to AI agents
+## How It Works
 
-```mermaid
-graph TB
-    A[AI Agent/Claude] --> B[MCP Server]
-    B --> C[CF Mail Bridge API]
-    C --> D[Cloudflare D1 Database]
-    C --> E[Resend Email Service]
-    F[Incoming Email] --> C
-```
+tai-mcp provides four powerful email tools for AI agents:
+
+- **send_email** - Send emails with markdown support
+- **fetch_email** - Retrieve and read incoming emails  
+- **list_inbox** - Browse and manage your inbox
+- **reply_email** - Respond with proper email threading
+
+Your agent gets its own email address: `{INSTANCE}.{NAME}@tai.chat`
 
 ## Key Features
 
-### MCP Tools Available
+### Email Tools & Use Cases
 
-- **`send_email`** - Send emails with markdown support and automatic HTML conversion
-- **`fetch_email`** - Retrieve and mark emails as read with content filtering
-- **`list_inbox`** - Browse emails with pagination and filtering options  
-- **`reply_email`** - Reply to emails with proper threading and conversation context
+**📧 send_email**
+- Send notifications and responses
+- Share reports and summaries
+- Forward processed information
+- Compose new conversations
 
-### Operating Modes
+**📥 fetch_email**
+- Process customer support requests
+- Read user feedback and inquiries
+- Retrieve specific emails for context
+- Automated email triage
 
-- **MCP Mode** (Default) - Provides email tools for MCP clients
-- **Live Mode** - Monitors for new emails and auto-invokes Claude Code
-- **Registration Mode** - Register new users with the API
+**📋 list_inbox**
+- Browse recent messages
+- Identify priority emails
+- Check for new messages
+- Manage email queues
 
-### Email Features
+**↩️ reply_email**
+- Respond to conversations
+- Continue email threads
+- Provide follow-up information
+- Automated customer support
 
-- HTML ↔ Markdown conversion for AI-friendly content processing
-- RFC-compliant email threading with proper Message-ID generation
-- Content filtering and formatting for optimal AI interaction
-- Support for both plain text and HTML email content
+### Key Features
 
-## Use Cases
+- **Markdown Support** - Write emails in markdown, automatically converted to HTML
+- **Smart Threading** - Proper email conversation threading for all clients
+- **Live Mode** - Automatic email monitoring and AI processing
+- **Secure Authentication** - JWT-based security with automatic token refresh
 
-### Automated Email Assistant
-Set up live mode to automatically process incoming emails and generate appropriate responses using AI.
+## Common Use Cases
 
-### Email Integration for AI Apps
-Embed email capabilities directly into your AI applications using the MCP protocol.
+**🤖 Personal Email Assistant**
+```bash
+npx tai-mcp live  # Automatically process incoming emails
+```
+Your AI agent monitors your inbox and handles emails autonomously.
 
-### Customer Support Automation
-Process support emails automatically with context-aware AI responses.
+**🎯 Customer Support Automation**
+Process support requests, generate context-aware responses, and maintain conversation threads.
 
-### Email Workflow Automation
-Create complex email workflows with AI decision-making and response generation.
+**📊 Report Distribution**
+Send automated reports, summaries, and notifications to stakeholders.
+
+**🔄 Workflow Integration**
+Integrate email capabilities into existing AI workflows and applications.
 
 ## Next Steps
 
 - [📖 **Installation Guide**](/guide/installation) - Complete setup instructions
 - [⚙️ **Configuration**](/guide/configuration) - Environment variables and settings  
-- [🔧 **API Reference**](/api/) - Complete tool and endpoint documentation
+- [🔧 **API Reference**](/api/) - Complete tool documentation
 - [🏗️ **Development**](/development/) - Architecture and implementation details
-- [📋 **Examples**](/examples/) - Real-world usage scenarios
