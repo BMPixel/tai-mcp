@@ -49,12 +49,7 @@ async function configureMcpServer(config: Config): Promise<void> {
     `-e LOG_LEVEL=${config.logLevel}`,
     `-e API_TIMEOUT=${config.apiTimeout}`,
     `-e POLL_INTERVAL=${config.pollInterval}`,
-    `-e API_BASE_URL=${config.baseUrl}`,
-    `-e LIVE_PROMPT="${config.livePrompt}"`,
-    `-e MAX_RETRIES=${config.maxRetries}`,
-    `-e RETRY_DELAY=${config.retryDelay}`,
-    `-e CLAUDE_TIMEOUT=${config.claudeTimeout}`,
-    `-e ENABLE_ACKNOWLEDGMENT=${config.enableAcknowledgment}`
+    `-e API_BASE_URL=${config.baseUrl}`
   ].filter(Boolean).join(' ');
 
   const command = `claude mcp add --scope local tai-mcp ${envVars} -- "${executablePath}"`;

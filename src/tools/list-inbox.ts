@@ -8,7 +8,7 @@ import { logger } from '../utils/logger.js';
 export function registerListInboxTool(server: McpServer, apiClient: ApiClient, config: Config): void {
   server.tool(
     'list_inbox',
-    'List recent emails in the inbox',
+    'List recent emails in the assistant\'s inbox',
     listInboxSchema.shape,
     async (params): Promise<ToolResponse> => {
       try {

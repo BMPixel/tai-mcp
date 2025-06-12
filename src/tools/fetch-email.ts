@@ -9,7 +9,7 @@ import { logger } from '../utils/logger.js';
 export function registerFetchEmailTool(server: McpServer, apiClient: ApiClient, config: Config): void {
   server.tool(
     'fetch_email',
-    'Retrieve and mark as read the oldest unread email',
+    'Retrieve and mark as read the oldest unread email from the assistant\'s mailbox',
     fetchEmailSchema.shape,
     async (params): Promise<ToolResponse> => {
       try {
